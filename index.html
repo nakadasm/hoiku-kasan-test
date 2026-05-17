@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>加算判定 精密版MVP｜埼玉県志木市・幼稚園型認定こども園</title>
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1e40af;
+    --ok: #16a34a;
+    --warn: #d97706;
+    --ng: #9ca3af;
+    --info: #0891b2;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --muted: #64748b;
+    --accent-bg: #eff6ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+  header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 20px 32px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  header h1 { margin: 0; font-size: 20px; font-weight: 700; }
+  header p { margin: 4px 0 0; font-size: 13px; opacity: 0.92; }
+  .version-pill {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    margin-left: 8px;
+    font-weight: 700;
+  }
+  .container {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 20px;
+    padding: 20px 32px;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+  @media (max-width: 1024px) {
+    .container { grid-template-columns: 1fr; padding: 16px; }
+  }
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .panel h2 {
+    margin: 0 0 14px;
+    font-size: 15px;
+    color: var(--primary-dark);
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 8px;
+  }
+  .form-group { margin-bottom: 12px; }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 3px;
+  }
+  .form-group input[type="text"],
+  .form-group input[type="number"],
+  .form-group select {
+    width: 100%;
+    padding: 7px 9px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  }
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0;
+    font-size: 13px;
+  }
+  .checkbox-group label { cursor: pointer; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 14px 0 6px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+  }
+  .section-label:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
+  button.primary {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: 0;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  button.primary:hover { background: var(--primary-dark); }
+  button.secondary {
+    background: white;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* 総額シミュレーション */
+  .totals-panel {
+    background: linear-gradient(135deg, #f0f9ff 0%, #ecfeff 100%);
+    border: 1px solid #bae6fd;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 16px;
+  }
+  .totals-panel h2 {
+    color: var(--primary-dark);
+    margin: 0 0 12px;
+    font-size: 15px;
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 6px;
+  }
+  .totals-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+  .totals-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+  .totals-card .label { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .totals-card .amount { font-size: 22px; font-weight: 700; color: var(--text); }
+  .totals-card .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .totals-card.improve .amount { color: var(--ok); }
+  .totals-card.improve { background: #f0fdf4; border-color: #bbf7d0; }
+  .totals-formula {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 10px;
+    background: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .summary-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+  }
+  .summary-card .num { font-size: 24px; font-weight: 700; }
+  .summary-card .label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .summary-card.ok .num { color: var(--ok); }
+  .summary-card.warn .num { color: var(--warn); }
+  .summary-card.conflict .num { color: var(--info); }
+  .summary-card.ng .num { color: var(--ng); }
+
+  .result-list { display: flex; flex-direction: column; gap: 8px; }
+  .result-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--ng);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .result-item.ok { border-left-color: var(--ok); }
+  .result-item.warn { border-left-color: var(--warn); }
+  .result-item.conflict { border-left-color: var(--info); }
+  .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .result-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0;
+  }
+  .result-meta {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .amount-tag {
+    display: inline-block;
+    background: #f1f5f9;
+    color: var(--text);
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 11px;
+    margin-right: 4px;
+  }
+  .amount-tag.applied { background: #dcfce7; color: #166534; }
+  .amount-tag.potential { background: #fef3c7; color: #92400e; }
+  .badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 12px;
+    white-space: nowrap;
+  }
+  .badge.ok { background: #dcfce7; color: #166534; }
+  .badge.warn { background: #fef3c7; color: #92400e; }
+  .badge.conflict { background: #cffafe; color: #155e75; }
+  .badge.ng { background: #f1f5f9; color: #475569; }
+  .badge.level {
+    background: #e0e7ff;
+    color: #3730a3;
+    margin-left: 4px;
+  }
+  .result-detail {
+    font-size: 13px;
+    margin-top: 6px;
+    color: var(--text);
+  }
+  .action-box {
+    background: #fefce8;
+    border: 1px solid #fde68a;
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-top: 8px;
+    font-size: 12px;
+  }
+  .action-box .title {
+    font-weight: 700;
+    color: #92400e;
+    margin-bottom: 3px;
+  }
+  .action-box ul { margin: 3px 0 0; padding-left: 18px; }
+  .action-box li { margin-bottom: 1px; }
+  .tab-bar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .tab {
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    font-weight: 500;
+  }
+  .tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    font-weight: 700;
+  }
+  .disclaimer {
+    background: #f8fafc;
+    border-left: 3px solid var(--muted);
+    padding: 10px 12px;
+    margin-top: 16px;
+    font-size: 11px;
+    color: var(--muted);
+    border-radius: 4px;
+    line-height: 1.5;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+  .ref-link {
+    font-size: 11px;
+    color: var(--primary);
+    text-decoration: none;
+    margin-top: 4px;
+    display: inline-block;
+  }
+  .ref-link:hover { text-decoration: underline; }
+  .category-badge {
+    display: inline-block;
+    background: #f1f5f9;
+    color: var(--muted);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>加算判定 精密版 MVP<span class="version-pill">v2 / 令和7年度</span></h1>
+  <p>埼玉県志木市・幼稚園型認定こども園｜33加算項目・円ベース試算・改善シナリオ比較</p>
+</header>
+
+<div class="container">
+  <!-- ===== 入力パネル ===== -->
+  <div class="panel" id="inputPanel">
+    <h2>園の情報入力</h2>
+
+    <div class="section-label">基本情報</div>
+    <div class="form-group">
+      <label>園名</label>
+      <input type="text" id="enName" value="サンプルこども園" />
+    </div>
+    <div class="form-group">
+      <label>地域区分</label>
+      <select id="chiikiKubun">
+        <option value="20" selected>20/100地域（志木市）</option>
+        <option value="16">16/100地域</option>
+        <option value="15">15/100地域</option>
+        <option value="12">12/100地域</option>
+        <option value="10">10/100地域</option>
+        <option value="6">6/100地域</option>
+        <option value="3">3/100地域</option>
+        <option value="0">その他地域</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>立地</label>
+      <select id="ricchi">
+        <option value="standard" selected>標準</option>
+        <option value="urban">都市部（賃借料加算dランク該当地域）</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>建物</label>
+      <select id="tatemono">
+        <option value="own" selected>自己所有</option>
+        <option value="rent">賃貸物件</option>
+      </select>
+    </div>
+
+    <div class="section-label">定員・在籍児童</div>
+    <div class="grid3">
+      <div class="form-group">
+        <label>1号定員</label>
+        <input type="number" id="teiin1" value="60" min="0" />
+      </div>
+      <div class="form-group">
+        <label>2号定員</label>
+        <input type="number" id="teiin2" value="30" min="0" />
+      </div>
+      <div class="form-group">
+        <label>3号定員</label>
+        <input type="number" id="teiin3" value="15" min="0" />
+      </div>
+    </div>
+    <div class="grid3">
+      <div class="form-group">
+        <label>0歳児</label>
+        <input type="number" id="age0" value="3" min="0" />
+      </div>
+      <div class="form-group">
+        <label>1歳児</label>
+        <input type="number" id="age1" value="6" min="0" />
+      </div>
+      <div class="form-group">
+        <label>2歳児</label>
+        <input type="number" id="age2" value="6" min="0" />
+      </div>
+    </div>
+    <div class="grid3">
+      <div class="form-group">
+        <label>3歳児</label>
+        <input type="number" id="age3" value="25" min="0" />
+      </div>
+      <div class="form-group">
+        <label>4歳児</label>
+        <input type="number" id="age4" value="28" min="0" />
+      </div>
+      <div class="form-group">
+        <label>5歳児</label>
+        <input type="number" id="age5" value="28" min="0" />
+      </div>
+    </div>
+
+    <div class="section-label">開所状況</div>
+    <div class="form-group">
+      <label>2号・3号認定の保育標準時間設定</label>
+      <select id="hoikuJikan">
+        <option value="hyoujun" selected>11時間（保育標準時間）</option>
+        <option value="tanjikan">8時間（保育短時間）</option>
+      </select>
+    </div>
+    <div class="checkbox-group"><input type="checkbox" id="saturdayOpen" checked /><label for="saturdayOpen">土曜開所あり</label></div>
+
+    <div class="section-label">職員配置</div>
+    <div class="grid2">
+      <div class="form-group">
+        <label>保育教諭（常勤）</label>
+        <input type="number" id="kyoyuFull" value="14" min="0" />
+      </div>
+      <div class="form-group">
+        <label>保育教諭（非常勤換算）</label>
+        <input type="number" id="kyoyuPart" value="4" min="0" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>職員の平均経験年数（年）</label>
+      <input type="number" id="avgKeiken" value="11" min="0" step="0.5" />
+    </div>
+    <div class="checkbox-group"><input type="checkbox" id="hasFukuencho" /><label for="hasFukuencho">副園長または教頭を配置</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="hasShukan" checked /><label for="hasShukan">主幹保育教諭を専任配置</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="hasGakkyuChosei" /><label for="hasGakkyuChosei">学級編制調整教諭を配置</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="hasKoshi" /><label for="hasKoshi">外部講師（音楽・体育・絵画等）を配置</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="hasEiyoshi" checked /><label for="hasEiyoshi">栄養士を配置</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="hasKangoshi" /><label for="hasKangoshi">看護師等を配置</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="hasKorei" /><label for="hasKorei">高齢者（60歳以上）を雇用・活用</label></div>
+
+    <div class="section-label">配置改善（手厚い配置）</div>
+    <div class="checkbox-group"><input type="checkbox" id="haichi1" /><label for="haichi1">1歳児を5:1で配置（基準6:1超）</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="haichi3" checked /><label for="haichi3">3歳児を15:1で配置（基準20:1超）</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="haichi4" /><label for="haichi4">4歳以上児を25:1で配置（基準30:1超）</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="teamHoiku" checked /><label for="teamHoiku">チーム保育推進（追加配置）あり</label></div>
+
+    <div class="section-label">取組・その他</div>
+    <div class="checkbox-group"><input type="checkbox" id="thirdParty" /><label for="thirdParty">第三者評価を直近5年で受審</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="ryoiku" /><label for="ryoiku">障害児を受け入れ</label></div>
+    <div class="form-group">
+      <label>障害児受入人数</label>
+      <input type="number" id="shogaiCount" value="0" min="0" />
+    </div>
+    <div class="checkbox-group"><input type="checkbox" id="kyushoku1" checked /><label for="kyushoku1">1号認定児に給食を実施（自園調理）</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="fukushoku" /><label for="fukushoku">副食費徴収免除対象児あり（年収360万未満等）</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="azukari" checked /><label for="azukari">預かり保育を実施</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="kosodate" /><label for="kosodate">子育て支援活動を実施</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="shogakkoSetsuzoku" /><label for="shogakkoSetsuzoku">小学校接続事業を実施</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="anzentaisaku" checked /><label for="anzentaisaku">安全対策（散歩経路点検・救命研修等）を実施</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="renkei" /><label for="renkei">小規模保育等の連携施設としての受入</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="ict" /><label for="ict">ICT（登降園管理+他1機能以上）を活用</label></div>
+
+    <div class="section-label">処遇改善要件</div>
+    <div class="checkbox-group"><input type="checkbox" id="careerPath" checked /><label for="careerPath">キャリアパス要件を充足</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="kenshu" /><label for="kenshu">副主任・専門リーダー等の研修要件を充足</label></div>
+    <div class="checkbox-group"><input type="checkbox" id="shogu3" checked /><label for="shogu3">区分3（質の向上）要件を充足</label></div>
+
+    <button class="primary" onclick="judge()">加算判定を実行</button>
+
+    <div class="disclaimer">
+      ※精密版MVP（v2）。令和7年度公定価格に基づく算定で、志木市（20/100地域）の代表的な定員区分の中央値を採用しています。表示金額は誤差±10〜15%程度を含む試算値です。最終的な申請可否・金額は内閣府／こども家庭庁告示および埼玉県・志木市の最新通知をご確認ください。1歳児配置改善加算は処遇改善Ⅰ〜Ⅲ全取得+ICT+平均経験年数10年以上の3要件全充足が必要です。
+    </div>
+  </div>
+
+  <!-- ===== 結果パネル ===== -->
+  <div>
+    <!-- 総額シミュレーション -->
+    <div class="totals-panel">
+      <h2>年間収入シミュレーション</h2>
+      <div class="totals-grid">
+        <div class="totals-card">
+          <div class="label">公定価格 基本部分</div>
+          <div class="amount" id="totalBase">¥ -</div>
+          <div class="sub" id="totalBaseSub">在籍児ベース</div>
+        </div>
+        <div class="totals-card">
+          <div class="label">現状の加算合計</div>
+          <div class="amount" id="totalApplied">¥ -</div>
+          <div class="sub" id="totalAppliedSub">適用済み加算</div>
+        </div>
+        <div class="totals-card improve">
+          <div class="label">改善余地（追加見込み）</div>
+          <div class="amount" id="totalPotential">+¥ -</div>
+          <div class="sub" id="totalPotentialSub">未充足加算を取得した場合</div>
+        </div>
+      </div>
+      <div class="totals-formula">
+        <strong>計算根拠:</strong> 基本部分 = 在籍児数 × 月単価（定員区分・年齢別） × 12か月。加算は適用可能項目の中央値を年額換算。賃借料加算・冷暖房費等の少額自動加算は概算で合算。1号認定の保護者負担分、副食費等は控除前の事業者収入ベース。
+      </div>
+    </div>
+
+    <!-- 加算件数サマリー -->
+    <div class="panel">
+      <h2>加算判定 結果サマリー</h2>
+      <div class="summary-cards">
+        <div class="summary-card ok"><div class="num" id="cntOk">-</div><div class="label">適用可能</div></div>
+        <div class="summary-card warn"><div class="num" id="cntWarn">-</div><div class="label">改善余地あり</div></div>
+        <div class="summary-card conflict"><div class="num" id="cntConflict">-</div><div class="label">排他関係注意</div></div>
+        <div class="summary-card ng"><div class="num" id="cntNg">-</div><div class="label">対象外</div></div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab active" data-tab="all" onclick="switchTab('all')">すべて</div>
+        <div class="tab" data-tab="ok" onclick="switchTab('ok')">適用可能</div>
+        <div class="tab" data-tab="warn" onclick="switchTab('warn')">改善余地あり</div>
+        <div class="tab" data-tab="conflict" onclick="switchTab('conflict')">排他関係</div>
+        <div class="tab" data-tab="national" onclick="switchTab('national')">国</div>
+        <div class="tab" data-tab="prefecture" onclick="switchTab('prefecture')">県</div>
+        <div class="tab" data-tab="city" onclick="switchTab('city')">市</div>
+      </div>
+      <div class="result-list" id="results">
+        <div class="empty-state">
+          <div class="icon">📋</div>
+          <div>左の入力フォームに園の情報を入力し、<br>「加算判定を実行」を押してください</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 単価データ（令和7年度・志木市 20/100地域の代表値）
+// 出典: こども家庭庁 令和7年度公定価格単価表（認定こども園）
+// 注: 実単価は定員区分により詳細に分岐するため、本MVPでは
+//     代表的な定員区分（45-90人帯）の中央値を採用
+// ============================================================
+const TANKA = {
+  // 月額基本単価（円/月/人）の代表値
+  base: {
+    age0: 240000,      // 0歳児
+    age1_2: 140000,    // 1-2歳児（保育標準時間）
+    age3: 60000,       // 3歳児
+    age4_5: 53000,     // 4-5歳児
+    age3_1go: 32000,   // 3歳児1号認定相当
+    age4_5_1go: 28000  // 4-5歳児1号認定相当
+  }
+};
+
+// ============================================================
+// 加算定義テーブル（令和7年度・幼稚園型認定こども園向け）
+// amount: 年額の中央値（円）、err: 誤差レンジ%
+// ============================================================
+const KASAN_DEFS = [
+  // ── 処遇改善等加算（一本化後） ─────────────────
+  {
+    id: 'shogu_kubun1', name: '処遇改善等加算 区分1（基礎分）',
+    category: '処遇改善', level: 'national', amount: 3500000, err: 30,
+    check: (s) => s.careerPath ? 'ok' : 'warn',
+    reason_ok: '令和7年度から一本化された処遇改善等加算の基礎分。キャリアパス要件を満たすため算定可能。',
+    reason_warn: 'キャリアパス要件が未充足です。令和8年度から必須化されるため早期対応推奨。',
+    action: {
+      title: '適用のための条件整備',
+      items: [
+        '職位・職責に応じた賃金体系を就業規則・給与規程に明記',
+        '職員の研修計画を策定し受講機会を確保',
+        '園内に賃金改善計画書を整備して職員に周知',
+        '令和8年度から充足必須化のため早急に対応'
+      ]
+    },
+    ref: 'こども家庭庁 令和7年度処遇改善等加算告示'
+  },
+  {
+    id: 'shogu_kubun2', name: '処遇改善等加算 区分2（賃金改善分）',
+    category: '処遇改善', level: 'national', amount: 2400000, err: 35,
+    check: (s) => (s.careerPath && s.kenshu) ? 'ok' : 'warn',
+    reason_ok: '副主任・専門リーダー等への配分原資として算定可能。',
+    reason_warn: '研修要件（副主任・専門リーダー等の分野別研修）が未充足です。',
+    action: {
+      title: '研修要件充足のために',
+      items: [
+        '対象職員に「乳児保育」「幼児教育」「障害児保育」「食育・アレルギー対応」「保健衛生・安全対策」「保護者支援・子育て支援」のいずれかの分野別研修を計画的に受講させる',
+        '埼玉県主催のキャリアアップ研修を活用（受講料無料）',
+        '令和7年度は経過措置あり、令和8年度から要件必須化のため早期計画化を推奨'
+      ]
+    },
+    ref: '埼玉県保育士等キャリアアップ研修'
+  },
+  {
+    id: 'shogu_kubun3', name: '処遇改善等加算 区分3（質の向上）',
+    category: '処遇改善', level: 'national', amount: 1800000, err: 25,
+    check: (s) => s.shogu3 ? 'ok' : 'warn',
+    reason_ok: '区分3（旧加算Ⅲ）の取組要件を満たすため算定可能。',
+    reason_warn: '質の向上に関する取組要件が未充足です。',
+    action: {
+      title: '適用のための取組',
+      items: [
+        '保育の質の向上のための研修受講と園内研修体制の整備',
+        '令和7年度4万円超の処遇改善を全職員に分配',
+        '実績報告書の精緻な作成（職員別賃金改善額の明示）'
+      ]
+    }
+  },
+
+  // ── 配置加算 ─────────────────
+  {
+    id: 'shukan_sennin', name: '主幹保育教諭等専任加算',
+    category: '配置加算', level: 'national', amount: 4000000, err: 15,
+    check: (s) => s.hasShukan ? 'ok' : 'warn',
+    reason_ok: '主幹保育教諭を専任配置しているため算定可能。',
+    reason_warn: '主幹保育教諭の専任配置がありません。療育支援・子育て支援・小学校接続等の取組要件もあり。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '主幹保育教諭を1名指名し、学級担任から外して専任化',
+        '代替の保育教諭1名を追加配置する必要あり（人件費約350〜400万円/年）',
+        '療育支援・子育て支援・小学校接続のいずれかの取組と組み合わせると効果大',
+        '加算約400万円 vs 人件費約400万円のため、本加算単体では収支トントン。複数加算との組合せが鍵'
+      ]
+    }
+  },
+  {
+    id: 'fukuencho', name: '副園長・教頭配置加算',
+    category: '配置加算', level: 'national', amount: 4500000, err: 15,
+    check: (s) => s.hasFukuencho ? 'ok' : 'warn',
+    reason_ok: '副園長または教頭を配置しているため算定可能。',
+    reason_warn: '副園長・教頭が未配置です。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '副園長または教頭の発令（職務命令書・組織図への明記）',
+        '管理職手当を含む処遇設計（人件費500〜700万円/年）',
+        '加算約450万円 vs 人件費約600万円の差額検討が必要。後継者育成・組織安定化のメリット込みで判断'
+      ]
+    }
+  },
+  {
+    id: 'gakkyu_chosei', name: '学級編制調整加算',
+    category: '配置加算', level: 'national', amount: 3500000, err: 20,
+    check: (s) => {
+      if ((s.age3 + s.age4 + s.age5) === 0) return 'na';
+      return s.hasGakkyuChosei ? 'ok' : 'warn';
+    },
+    reason_ok: '学級編制調整教諭を配置しているため算定可能。',
+    reason_warn: '学級編制調整教諭が未配置です。',
+    reason_na: '1号認定（3〜5歳）が在籍しないため対象外。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '1号認定の学級編制が複数学年混在等で困難な場合に調整教諭を1名追加配置',
+        '小規模園（在籍児が少ない園）ほど算定可能性が高い',
+        '配置教諭の保育士・幼稚園教諭資格を確認'
+      ]
+    }
+  },
+  {
+    id: 'team_hoiku', name: 'チーム保育推進加算',
+    category: '配置加算', level: 'national', amount: 4200000, err: 15,
+    check: (s) => {
+      if (!s.teamHoiku) return 'warn';
+      if (s.haichi4) return 'conflict';
+      return 'ok';
+    },
+    reason_ok: 'チーム保育推進のための追加職員配置があるため算定可能。',
+    reason_warn: 'チーム保育推進のための追加配置がありません。',
+    reason_conflict: '4歳以上児配置改善加算との同時算定は不可。どちらか有利な方を選択してください。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '配置基準を上回る保育教諭を追加配置（最大3名まで段階加算）',
+        '加算対象職員の平均勤続年数要件あり（おおむね15年以上）',
+        '4歳以上児配置改善加算とは選択制のため、両方の効果額を比較検討'
+      ]
+    }
+  },
+  {
+    id: 'koshi', name: '講師配置加算',
+    category: '配置加算', level: 'national', amount: 800000, err: 30,
+    check: (s) => s.hasKoshi ? 'ok' : 'warn',
+    reason_ok: '外部講師（音楽・体育・絵画等）の配置で算定可能。',
+    reason_warn: '外部講師の配置がありません。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '音楽・体育・絵画等の専門指導者を委託契約で配置',
+        '1号認定児への教育活動の充実が要件',
+        '実態として保育教諭が兼任でも、契約形態で算定可'
+      ]
+    }
+  },
+
+  // ── 配置改善加算 ─────────────────
+  {
+    id: 'haichi_1sai', name: '1歳児配置改善加算（R7新設）',
+    category: '配置改善', level: 'national', amount: 2200000, err: 25,
+    check: (s) => {
+      if (s.age1 === 0) return 'na';
+      const allShogu = s.careerPath && s.kenshu && s.shogu3;
+      const ictOk = s.ict;
+      const keikenOk = s.avgKeiken >= 10;
+      if (!s.haichi1) return 'warn';
+      if (!allShogu || !ictOk || !keikenOk) return 'warn';
+      return 'ok';
+    },
+    reason_ok: '1歳児5:1配置+処遇改善Ⅰ〜Ⅲ全取得+ICT活用+平均経験年数10年以上の全要件充足。',
+    reason_warn: '1歳児5:1配置・処遇改善全取得・ICT活用・平均経験年数10年以上の4要件の一部が未充足です（令和7年度新設加算）。',
+    reason_na: '1歳児が在籍しないため対象外。',
+    action: {
+      title: '4要件全てを充足するために',
+      items: [
+        '①1歳児クラスを5:1配置に改善（保育教諭の追加配置）',
+        '②処遇改善等加算 区分1・2・3すべてを取得',
+        '③ICT機器導入（登降園管理+計画記録/保護者連絡/キャッシュレスのうち1機能以上）',
+        '④職員の平均経験年数が10年以上',
+        '※令和7年度新設のため申請漏れ多発、要注意'
+      ]
+    },
+    ref: 'こども家庭庁全国こども政策主管課長会議資料'
+  },
+  {
+    id: 'haichi_3sai', name: '3歳児配置改善加算',
+    category: '配置改善', level: 'national', amount: 2800000, err: 20,
+    check: (s) => {
+      if (s.age3 === 0) return 'na';
+      return s.haichi3 ? 'ok' : 'warn';
+    },
+    reason_ok: '3歳児を15:1配置しているため算定可能。',
+    reason_warn: '3歳児が20:1配置（基準）のままです。15:1配置で加算対象。',
+    reason_na: '3歳児が在籍しないため対象外。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '3歳児クラスに保育教諭を追加配置し15:1を実現',
+        '担任複数制（複数担任制）の導入と合わせて検討'
+      ]
+    }
+  },
+  {
+    id: 'haichi_4sai', name: '4歳以上児配置改善加算（R7新設）',
+    category: '配置改善', level: 'national', amount: 3200000, err: 20,
+    check: (s) => {
+      if ((s.age4 + s.age5) === 0) return 'na';
+      if (s.teamHoiku) return 'conflict';
+      return s.haichi4 ? 'ok' : 'warn';
+    },
+    reason_ok: '4歳以上児を25:1配置しているため算定可能。',
+    reason_warn: '4歳以上児が30:1配置（基準）のままです。25:1配置で加算対象（R7新設）。',
+    reason_conflict: 'チーム保育推進加算との同時算定は不可。',
+    reason_na: '4歳以上児が在籍しないため対象外。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '4・5歳児クラスに保育教諭を追加配置し25:1を実現',
+        'チーム保育推進加算との収支シミュレーションを実施'
+      ]
+    }
+  },
+
+  // ── 取組加算 ─────────────────
+  {
+    id: 'third_party', name: '第三者評価受審加算',
+    category: '取組加算', level: 'national', amount: 1500000, err: 20,
+    check: (s) => s.thirdParty ? 'ok' : 'warn',
+    reason_ok: '第三者評価を受審しているため算定可能（受審年度に一括）。',
+    reason_warn: '第三者評価を未受審です。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '埼玉県認証の第三者評価機関に申し込み（受審費用60〜80万円程度）',
+        '5年に1回の受審で算定可能（受審年度に上限約150万円）',
+        '受審結果は埼玉県の福ナビ等で公表（園のPRにも活用可）'
+      ]
+    }
+  },
+  {
+    id: 'ryoiku', name: '療育支援加算',
+    category: '取組加算', level: 'national', amount: 1500000, err: 20,
+    check: (s) => {
+      if (!s.hasShukan) return 'warn';
+      return s.ryoiku ? 'ok' : 'warn';
+    },
+    reason_ok: '障害児受入+主幹保育教諭の専任配置で算定可能。',
+    reason_warn: '障害児未受入、または主幹保育教諭の専任配置がありません。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '障害児（軽度を含む）の積極的受入',
+        '主幹保育教諭の専任化が前提条件',
+        '埼玉県の認定こども園特別支援教育・保育経費との併用検討'
+      ]
+    }
+  },
+  {
+    id: 'eiyo_kanri', name: '栄養管理加算',
+    category: '取組加算', level: 'national', amount: 1200000, err: 30,
+    check: (s) => s.hasEiyoshi ? 'ok' : 'warn',
+    reason_ok: '栄養士を活用した給食実施のため算定可能。',
+    reason_warn: '栄養士の配置・活用がありません。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '栄養士を雇用、または委託契約',
+        '献立作成・栄養指導・アレルギー対応の業務実態が必要',
+        '常勤/非常勤で加算額が異なる（常勤の方が高い）',
+        '近隣園との共同雇用も選択肢'
+      ]
+    }
+  },
+  {
+    id: 'kyushoku_1', name: '給食実施加算（1号認定）',
+    category: '取組加算', level: 'national',
+    amount: 0, // dynamic
+    err: 5,
+    check: (s) => {
+      if (s.teiin1 === 0) return 'na';
+      return s.kyushoku1 ? 'ok' : 'warn';
+    },
+    dynamicAmount: (s) => {
+      const ichigoZaiseki = s.age3 + s.age4 + s.age5;
+      const ichigoEst = Math.floor(ichigoZaiseki * s.teiin1 / Math.max(s.teiin1 + s.teiin2, 1));
+      return ichigoEst * 1600 * 12; // 月1,600円×12か月
+    },
+    reason_ok: '1号認定児への給食を実施しているため算定可能。',
+    reason_warn: '1号認定児への給食を未実施です。',
+    reason_na: '1号認定の定員がないため対象外。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '1号認定児（教育標準時間認定）への昼食提供を実施',
+        '自園調理または外部搬入のいずれも可',
+        'アレルギー対応マニュアルの整備が望ましい'
+      ]
+    }
+  },
+  {
+    id: 'fukushoku', name: '副食費徴収免除加算',
+    category: '取組加算', level: 'national', amount: 0, err: 5,
+    check: (s) => {
+      if (s.teiin1 === 0) return 'na';
+      return s.fukushoku ? 'ok' : 'warn';
+    },
+    dynamicAmount: (s) => {
+      // 想定: 1号定員の3割が対象児と仮定（年収360万未満等）
+      const ichigoZaiseki = Math.min(s.teiin1, s.age3 + s.age4 + s.age5);
+      const taishoChild = Math.floor(ichigoZaiseki * 0.3);
+      return taishoChild * 4500 * 12;
+    },
+    reason_ok: '副食費徴収免除対象児がいるため算定可能。',
+    reason_warn: '副食費徴収免除対象児の有無が未確認です。',
+    reason_na: '1号認定の定員がないため対象外。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '1号認定で年収360万円未満世帯・第3子以降の世帯を確認',
+        '該当児がいれば自動的に徴収免除し、加算として支給',
+        '保護者への所得確認と申請書整備が必要'
+      ]
+    }
+  },
+  {
+    id: 'shogakko_setsuzoku', name: '小学校接続加算',
+    category: '取組加算', level: 'national', amount: 800000, err: 25,
+    check: (s) => s.shogakkoSetsuzoku ? 'ok' : 'warn',
+    reason_ok: '小学校接続事業を実施しているため算定可能。',
+    reason_warn: '小学校接続事業を未実施です。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '地域の小学校と幼保小連携プログラムを実施（年間計画策定）',
+        '5歳児の交流活動・職員研修・カリキュラム接続',
+        '志木市教育委員会との連携も検討'
+      ]
+    }
+  },
+  {
+    id: 'kosodate_shien', name: '子育て支援活動費加算',
+    category: '取組加算', level: 'national', amount: 600000, err: 30,
+    check: (s) => {
+      if (!s.hasShukan) return 'warn';
+      return s.kosodate ? 'ok' : 'warn';
+    },
+    reason_ok: '主幹専任化+子育て支援活動で算定可能。',
+    reason_warn: '主幹保育教諭の専任化または子育て支援活動が未実施です。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '地域子育て支援拠点事業、園庭開放、育児相談等の実施',
+        '主幹保育教諭の専任化が前提',
+        '志木市内の子育て世代向けに情報発信を強化'
+      ]
+    }
+  },
+  {
+    id: 'anzentaisaku', name: '安全対策加算',
+    category: '取組加算', level: 'national', amount: 250000, err: 30,
+    check: (s) => s.anzentaisaku ? 'ok' : 'warn',
+    reason_ok: '安全計画策定・救命研修受講等の安全対策で算定可能。',
+    reason_warn: '安全対策の取組が未整備です。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '園外活動の散歩経路点検記録の整備',
+        '職員の救命救急研修受講（毎年1名以上）',
+        '安全計画の策定と保護者への共有'
+      ]
+    }
+  },
+  {
+    id: 'korei_chiiki', name: '入所児童処遇特別加算（高齢者活用）',
+    category: '取組加算', level: 'national', amount: 400000, err: 30,
+    check: (s) => s.hasKorei ? 'ok' : 'warn',
+    reason_ok: '60歳以上の方を雇用・活用しているため算定可能。',
+    reason_warn: '高齢者の雇用・活用がありません。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '60歳以上の方を保育補助・事務補助等で雇用',
+        '常勤・非常勤いずれも対象（取組状況により加算）',
+        '埼玉県保育補助者雇上費貸付との併用検討'
+      ]
+    }
+  },
+  {
+    id: 'renkei', name: '連携施設加算',
+    category: '取組加算', level: 'national', amount: 700000, err: 25,
+    check: (s) => s.renkei ? 'ok' : 'warn',
+    reason_ok: '小規模保育・家庭的保育等の連携施設として受入を行うため算定可能。',
+    reason_warn: '連携施設としての受入実績がありません。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '志木市内の小規模保育・家庭的保育施設と連携協定を締結',
+        '卒園児（3歳）の受け皿として優先入園枠を設定',
+        '園庭・行事の合同利用なども連携の一形態として算定可'
+      ]
+    }
+  },
+  {
+    id: 'kango', name: '看護師等配置加算',
+    category: '配置加算', level: 'national', amount: 1800000, err: 20,
+    check: (s) => {
+      if ((s.age0 + s.age1 + s.age2) === 0) return 'na';
+      return s.hasKangoshi ? 'ok' : 'warn';
+    },
+    reason_ok: '0〜2歳児が在籍し看護師等を配置のため算定可能。',
+    reason_warn: '看護師等が未配置です。',
+    reason_na: '0〜2歳児が在籍しないため対象外。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '看護師・准看護師・保健師のいずれかを1名配置',
+        '医療的ケア児の受入時はさらに加配可能',
+        '志木市が令和10年度開設予定の医療的ケア児受入園との連携も検討'
+      ]
+    }
+  },
+
+  // ── 諸経費・自動算定系 ─────────────────
+  {
+    id: 'reidanbo', name: '冷暖房費加算',
+    category: '諸経費加算', level: 'national', amount: 150000, err: 30,
+    check: (s) => 'ok',
+    reason_ok: '在籍児に応じて自動算定（標準単価）。志木市は寒冷地加算対象外。',
+    action: { title: '確認事項', items: ['加算申請の漏れがないか自治体担当者に確認'] }
+  },
+  {
+    id: 'shisetsu_kyoka', name: '施設機能強化推進費加算',
+    category: '諸経費加算', level: 'national', amount: 350000, err: 25,
+    check: (s) => 'ok',
+    reason_ok: '防災・防犯対策に係る経費として算定可能。',
+    action: {
+      title: '確認事項',
+      items: ['防災訓練・避難訓練の年間実施計画を整備', '実費領収書の保管（消耗品・点検費等）']
+    }
+  },
+  {
+    id: 'chinshaku', name: '賃借料加算',
+    category: '諸経費加算', level: 'national', amount: 0, err: 15,
+    check: (s) => s.tatemono === 'rent' ? 'ok' : 'na',
+    dynamicAmount: (s) => {
+      if (s.tatemono !== 'rent') return 0;
+      // 都市部dランク: 約3,500千円/年、標準: 約1,500千円/年
+      return s.ricchi === 'urban' ? 3500000 : 1500000;
+    },
+    reason_ok: '賃貸物件設置のため、地域区分（a〜d）×標準・都市部の区分で算定。',
+    reason_na: '自己所有物件のため対象外。',
+    action: { title: '確認事項', items: ['賃貸借契約書のコピーを準備', '志木市は都市部dランクに該当する可能性が高い'] }
+  },
+
+  // ── 預かり保育 ─────────────────
+  {
+    id: 'azukari_hoiku', name: '一時預かり事業（幼稚園型）',
+    category: '預かり保育', level: 'national', amount: 3500000, err: 40,
+    check: (s) => s.azukari ? 'ok' : 'warn',
+    reason_ok: '一時預かり事業（幼稚園型）を実施しているため算定可能。',
+    reason_warn: '預かり保育（新2号・新3号対応）を未実施です。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '志木市から預かり保育事業の認定を受ける',
+        '保育の必要性のある児童に対し預かり保育を提供',
+        '無償化対象: 新2号月額上限11,300円、新3号16,300円',
+        '長期休業中の実施で加算額が大幅に増加'
+      ]
+    },
+    ref: '志木市・幼児教育無償化制度'
+  },
+
+  // ── 埼玉県の独自施策 ─────────────────
+  {
+    id: 'saitama_tokushien', name: '埼玉県：認定こども園特別支援教育・保育経費',
+    category: '県独自補助', level: 'prefecture',
+    amount: 0, err: 20,
+    check: (s) => {
+      if (!s.ryoiku) return 'warn';
+      return s.shogaiCount > 0 ? 'ok' : 'warn';
+    },
+    dynamicAmount: (s) => Math.max(0, s.shogaiCount) * 1500000,
+    reason_ok: '障害児受入のため埼玉県補助の対象となる可能性が高い（受入人数連動）。',
+    reason_warn: '障害児受入の取組または受入人数の登録がありません。',
+    action: {
+      title: '適用に向けた具体策',
+      items: [
+        '埼玉県こども支援課への申請（要綱で詳細確認）',
+        '個別支援計画の策定と運用実績が必要',
+        '療育支援加算との併用可能な場合あり'
+      ]
+    },
+    ref: '埼玉県こども支援課'
+  },
+  {
+    id: 'saitama_hojosha', name: '埼玉県：保育補助者雇上強化事業（貸付）',
+    category: '県独自補助', level: 'prefecture', amount: 2953000, err: 10,
+    check: (s) => 'warn',
+    reason_warn: '貸付制度のため新規雇用時に申請が必要。最大年額295万3千円×3年（条件達成で返還免除）。',
+    action: {
+      title: '適用条件',
+      items: [
+        '保育補助者を新たに雇い上げる場合に貸付',
+        '対象期間内の新規雇用が条件',
+        '保育士資格を持たない子育て経験者等の雇用で人手不足解消',
+        '一定期間の継続雇用で返還免除あり'
+      ]
+    },
+    ref: '埼玉県福祉人材センター'
+  },
+  {
+    id: 'saitama_shinsotsu', name: '埼玉県：新卒保育士就職準備金貸付',
+    category: '県独自補助', level: 'prefecture', amount: 400000, err: 5,
+    check: (s) => s.careerPath ? 'ok' : 'warn',
+    reason_ok: 'キャリアパス要件充足の施設として対象（最大40万円/人・2年継続で返還免除）。',
+    reason_warn: 'キャリアパス要件未充足の場合、対象外となります。',
+    action: {
+      title: '適用条件',
+      items: [
+        '令和7年度に新卒保育士を採用予定であること',
+        '処遇改善等加算のキャリアパス要件を満たしていること（必須）',
+        '2年以上の継続勤務で返還免除'
+      ]
+    },
+    ref: '埼玉県福祉人材センター'
+  },
+
+  // ── 志木市の独自補助 ─────────────────
+  {
+    id: 'shiki_unei', name: '志木市：民間保育園等運営改善費補助金',
+    category: '市独自補助', level: 'city', amount: 0, err: 50,
+    check: (s) => 'warn',
+    reason_warn: '令和7年度市予算3.28億円。幼稚園型認定こども園が対象範囲か要確認。',
+    action: {
+      title: '確認事項',
+      items: [
+        '志木市保育課（電話:048-473-1764）に対象範囲を確認',
+        '幼稚園型認定こども園が対象に含まれるか要確認（保育所等中心の補助）',
+        '令和7年度予算は前年度比+3,622万円で拡充'
+      ]
+    },
+    ref: '志木市令和7年度予算'
+  },
+  {
+    id: 'shiki_azukari', name: '志木市：預かり保育補助（市単独上乗せ）',
+    category: '市独自補助', level: 'city', amount: 0, err: 30,
+    check: (s) => s.azukari ? 'warn' : 'warn',
+    reason_warn: '預かり保育事業の運営に対する市の上乗せ補助。志木市保育課に要確認。',
+    action: {
+      title: '確認事項',
+      items: [
+        '志木市の預かり保育に対する独自補助の有無を保育課に確認',
+        '無償化分（新2号:11,300円、新3号:16,300円）と別建ての可能性'
+      ]
+    },
+    ref: '志木市保育課（要確認）'
+  }
+];
+
+// ============================================================
+// State取得
+// ============================================================
+function getState() {
+  const num = (id) => parseInt(document.getElementById(id).value || 0);
+  const chk = (id) => document.getElementById(id).checked;
+  const txt = (id) => document.getElementById(id).value;
+  const fnum = (id) => parseFloat(document.getElementById(id).value || 0);
+  return {
+    enName: txt('enName'),
+    chiikiKubun: txt('chiikiKubun'),
+    ricchi: txt('ricchi'),
+    tatemono: txt('tatemono'),
+    teiin1: num('teiin1'), teiin2: num('teiin2'), teiin3: num('teiin3'),
+    age0: num('age0'), age1: num('age1'), age2: num('age2'),
+    age3: num('age3'), age4: num('age4'), age5: num('age5'),
+    hoikuJikan: txt('hoikuJikan'),
+    saturdayOpen: chk('saturdayOpen'),
+    kyoyuFull: num('kyoyuFull'), kyoyuPart: num('kyoyuPart'),
+    avgKeiken: fnum('avgKeiken'),
+    hasFukuencho: chk('hasFukuencho'),
+    hasShukan: chk('hasShukan'),
+    hasGakkyuChosei: chk('hasGakkyuChosei'),
+    hasKoshi: chk('hasKoshi'),
+    hasEiyoshi: chk('hasEiyoshi'),
+    hasKangoshi: chk('hasKangoshi'),
+    hasKorei: chk('hasKorei'),
+    haichi1: chk('haichi1'),
+    haichi3: chk('haichi3'),
+    haichi4: chk('haichi4'),
+    teamHoiku: chk('teamHoiku'),
+    thirdParty: chk('thirdParty'),
+    ryoiku: chk('ryoiku'),
+    shogaiCount: num('shogaiCount'),
+    kyushoku1: chk('kyushoku1'),
+    fukushoku: chk('fukushoku'),
+    azukari: chk('azukari'),
+    kosodate: chk('kosodate'),
+    shogakkoSetsuzoku: chk('shogakkoSetsuzoku'),
+    anzentaisaku: chk('anzentaisaku'),
+    renkei: chk('renkei'),
+    ict: chk('ict'),
+    careerPath: chk('careerPath'),
+    kenshu: chk('kenshu'),
+    shogu3: chk('shogu3')
+  };
+}
+
+let lastResults = [];
+let currentTab = 'all';
+
+// ============================================================
+// 基本部分の年額試算
+// ============================================================
+function calcBase(s) {
+  // 1号認定相当（3-5歳）と2号認定（3-5歳）の区分
+  const ichigoCount = Math.min(s.teiin1, s.age3 + s.age4 + s.age5);
+  const nigoCount = Math.max(0, (s.age3 + s.age4 + s.age5) - ichigoCount);
+  // 月額×12
+  const yen =
+    s.age0 * TANKA.base.age0 * 12 +
+    (s.age1 + s.age2) * TANKA.base.age1_2 * 12 +
+    (s.age3 - Math.min(s.age3, ichigoCount * 0.33)) * TANKA.base.age3 * 12 +
+    ((s.age4 + s.age5) - Math.min(s.age4 + s.age5, ichigoCount * 0.67)) * TANKA.base.age4_5 * 12 +
+    Math.min(s.age3, ichigoCount * 0.33) * TANKA.base.age3_1go * 12 +
+    Math.min(s.age4 + s.age5, ichigoCount * 0.67) * TANKA.base.age4_5_1go * 12;
+  return Math.round(yen);
+}
+
+// ============================================================
+// 加算金額の計算
+// ============================================================
+function calcAmount(def, s) {
+  if (def.dynamicAmount) return def.dynamicAmount(s);
+  return def.amount || 0;
+}
+
+// ============================================================
+// 判定実行
+// ============================================================
+function judge() {
+  const state = getState();
+  const results = KASAN_DEFS.map(def => {
+    const status = def.check(state);
+    const amount = calcAmount(def, state);
+    return { def, status, amount };
+  });
+  lastResults = results;
+  renderResults();
+  renderTotals(state);
+}
+
+function renderTotals(state) {
+  const base = calcBase(state);
+  const applied = lastResults
+    .filter(r => r.status === 'ok')
+    .reduce((sum, r) => sum + r.amount, 0);
+  const potential = lastResults
+    .filter(r => r.status === 'warn' || r.status === 'conflict')
+    .reduce((sum, r) => sum + r.amount, 0);
+
+  const fmt = (n) => '¥ ' + Math.round(n / 10000).toLocaleString() + ' 万';
+  document.getElementById('totalBase').textContent = fmt(base);
+  document.getElementById('totalBaseSub').textContent = `（月額換算 約${Math.round(base/12/10000).toLocaleString()}万円）`;
+  document.getElementById('totalApplied').textContent = fmt(applied);
+  document.getElementById('totalAppliedSub').textContent = `${lastResults.filter(r => r.status === 'ok').length}項目の合算`;
+  document.getElementById('totalPotential').textContent = '+' + fmt(potential);
+  document.getElementById('totalPotentialSub').textContent = `${lastResults.filter(r => r.status === 'warn' || r.status === 'conflict').length}項目の最大ポテンシャル`;
+}
+
+function renderResults() {
+  const filtered = lastResults.filter(r => {
+    if (currentTab === 'all') return true;
+    if (currentTab === 'ok') return r.status === 'ok';
+    if (currentTab === 'warn') return r.status === 'warn';
+    if (currentTab === 'conflict') return r.status === 'conflict';
+    if (currentTab === 'national') return r.def.level === 'national';
+    if (currentTab === 'prefecture') return r.def.level === 'prefecture';
+    if (currentTab === 'city') return r.def.level === 'city';
+    return true;
+  });
+
+  const cnt = { ok: 0, warn: 0, conflict: 0, ng: 0 };
+  lastResults.forEach(r => {
+    if (r.status === 'ok') cnt.ok++;
+    else if (r.status === 'warn') cnt.warn++;
+    else if (r.status === 'conflict') cnt.conflict++;
+    else if (r.status === 'na') cnt.ng++;
+  });
+  document.getElementById('cntOk').textContent = cnt.ok;
+  document.getElementById('cntWarn').textContent = cnt.warn;
+  document.getElementById('cntConflict').textContent = cnt.conflict;
+  document.getElementById('cntNg').textContent = cnt.ng;
+
+  const container = document.getElementById('results');
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📂</div><div>このタブには該当項目がありません</div></div>';
+    return;
+  }
+
+  const levelLabel = (lv) => lv === 'national' ? '国' : lv === 'prefecture' ? '県' : '市';
+
+  // 金額の大きい順にソート（同じステータス内で）
+  filtered.sort((a, b) => b.amount - a.amount);
+
+  container.innerHTML = filtered.map(({ def, status, amount }) => {
+    const cls = status === 'ok' ? 'ok' : status === 'warn' ? 'warn' : status === 'conflict' ? 'conflict' : '';
+    const badgeCls = status === 'ok' ? 'ok' : status === 'warn' ? 'warn' : status === 'conflict' ? 'conflict' : 'ng';
+    const badgeText = status === 'ok' ? '適用可能' : status === 'warn' ? '改善余地あり' : status === 'conflict' ? '排他関係に注意' : '対象外';
+    const reasonKey = 'reason_' + status;
+    const reason = def[reasonKey] || def.reason_warn || '';
+
+    let actionHtml = '';
+    if ((status === 'warn' || status === 'conflict') && def.action) {
+      actionHtml = `
+        <div class="action-box">
+          <div class="title">💡 ${def.action.title}</div>
+          <ul>${def.action.items.map(it => `<li>${it}</li>`).join('')}</ul>
+        </div>
+      `;
+    }
+
+    let amountHtml = '';
+    if (amount > 0) {
+      const wan = Math.round(amount / 10000).toLocaleString();
+      const errRange = def.err ? `±${def.err}%` : '';
+      const amountCls = status === 'ok' ? 'applied' : 'potential';
+      amountHtml = `<span class="amount-tag ${amountCls}">年額 約${wan}万円 ${errRange}</span>`;
+    }
+
+    return `
+      <div class="result-item ${cls}">
+        <div class="result-header">
+          <div style="flex:1; min-width:0">
+            <p class="result-title">${def.name}<span class="badge level">${levelLabel(def.level)}</span></p>
+            <div class="result-meta">
+              <span class="category-badge">${def.category}</span>
+              ${amountHtml}
+            </div>
+          </div>
+          <span class="badge ${badgeCls}">${badgeText}</span>
+        </div>
+        <div class="result-detail">${reason}</div>
+        ${actionHtml}
+        ${def.ref ? `<div class="result-meta" style="margin-top:6px;">📖 ${def.ref}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
+  renderResults();
+}
+
+// 初期判定
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(judge, 100);
+});
+</script>
+</body>
+</html>
